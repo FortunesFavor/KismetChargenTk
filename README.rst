@@ -1,4 +1,4 @@
-Character Generator for Mindy's Game
-====================================
+Character Generator for Kismet
+==============================
 
-...
+This is in heavy need of a rewrite.
