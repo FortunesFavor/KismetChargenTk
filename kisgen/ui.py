@@ -2,14 +2,15 @@ import Tkinter
 # import Tix
 import ttk
 
-from kisgen.model import info_keys, keys
+from kisgen.model import info_keys, keys, DEFAULT, Character
+from kisgen.tkutil import Menu, Item
 
 
 class DataBinder(object):
-    def __init__(self, root, data):
+    def __init__(self, root, filename=DEFAULT):
         self.root = root
         self.vars = {}
-        self.load(data)
+        self.load(filename)
 
     def __setitem__(self, name, value):
         realname = keys[name]
@@ -26,16 +27,16 @@ class DataBinder(object):
     def update(self, name, sv):
         self.source[name] = sv.get()
 
-    def load(self, data):
-        self.source = data
+    def load(self, filename=DEFAULT):
+        self.source = Character.loadfile(filename)
         tmp = dict.fromkeys(keys.values())
-        tmp.update(data)
+        tmp.update(self.source)
         for k, v in tmp.items():
             if k in self.vars:
                 self.vars[k].set(v)
 
 
-class KisInfo(ttk.LabelFrame):
+class KisInfo(ttk.Frame):
     _fields = tuple((k, ttk.Entry) for k in info_keys)
 
     def make_fields(self):
@@ -47,9 +48,8 @@ class KisInfo(ttk.LabelFrame):
             Field.grid(column=1, row=idx, sticky='EW')
 
     def __init__(self, parent, data_fields, **kw):
-        ttk.LabelFrame.__init__(self, parent, **kw)
+        ttk.Frame.__init__(self, parent, **kw)
         self.data_fields = data_fields
-        self.config(text="Character Information")
 
         self.columnconfigure(0, weight=0)
         self.columnconfigure(1, weight=1)
@@ -57,13 +57,35 @@ class KisInfo(ttk.LabelFrame):
         self.make_fields()
 
 
+class KisMain(Tkinter.Tk):
+    def __init__(self, *args, **kwargs):
+        Tkinter.Tk.__init__(self, *args, **kwargs)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.binder = DataBinder(self)
+        self.notebook = ttk.Notebook(self)
+        self.notebook.grid(column=0, row=0, sticky="NEWS")
+        self.info = KisInfo(self.notebook, self.binder)
+        self.notebook.add(self.info, text="Character Information")
+        menu_def = Menu(
+            None,
+            Menu(
+                'File',
+                Item('New'),
+                Item('Open...'),
+                Item('Save'),
+                Item('Save As...'),
+                Menu(
+                    'Export',
+                    Item('Text'),
+                    Item('PDF'),
+                ),
+                Item('Exit'),
+            )
+        )
+        self.menu = menu_def.build(self)
+
+
 if __name__ == '__main__':
-    root = Tkinter.Tk()
-    root.columnconfigure(0, weight=1)
-    root.rowconfigure(0, weight=1)
-    df = dict()
-    db = DataBinder(root, df)
-    KisInfo(root, db).grid(column=0, row=0, sticky="NEWS")
+    root = KisMain()
     root.mainloop()
-    from pprint import pprint
-    pprint(df)
