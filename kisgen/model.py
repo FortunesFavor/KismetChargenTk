@@ -20,8 +20,16 @@ info_keys = collections.OrderedDict((
     ('Inferior Skill Aspect', 'inferior_skill_aspect'),
 ))
 
+stat_keys = collections.OrderedDict((
+    ('Body', 'body'),
+    ('Reflexes', 'reflexes'),
+    ('Wits', 'wits'),
+    ('Persona', 'persona'),
+))
+
 keys = collections.OrderedDict()
 keys.update(info_keys)
+keys.update(stat_keys)
 
 _internal_keys = list(keys.values())
 
