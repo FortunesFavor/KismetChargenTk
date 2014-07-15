@@ -9,6 +9,8 @@ info_keys = collections.OrderedDict((
     ('Name', 'name'),
     ('Concept', 'concept'),
     ('Description', 'description'),
+))
+aspect_keys = collections.OrderedDict((
     ('Ambition Aspect', 'ambition_aspect'),
     ('Background Aspect', 'background_aspect'),
     ('Conviction Aspect', 'conviction_aspect'),
@@ -29,6 +31,7 @@ stat_keys = collections.OrderedDict((
 
 keys = collections.OrderedDict()
 keys.update(info_keys)
+keys.update(aspect_keys)
 keys.update(stat_keys)
 
 _internal_keys = list(keys.values())

@@ -4,8 +4,14 @@ import ttk
 
 from functools import partial
 
-from kisgen.model import info_keys, keys, DEFAULT, Character, stat_keys
+from kisgen.model import (
+    info_keys, keys, DEFAULT, Character, stat_keys, aspect_keys
+)
 from kisgen.tkutil import Menu, Item
+
+stat_field = partial(Tix.Control, integer=True, min=0, max=5)
+level_field = partial(Tix.Control, integer=True, min=1)
+skill_field = partial(Tix.Control, integer=True, min=0, max=10)
 
 
 class DataBinder(object):
@@ -70,28 +76,29 @@ class KisFrame(ttk.Frame):
 
 
 class KisInfo(KisFrame):
-    _fields = tuple((k, ttk.Entry) for k in info_keys)
+    _fields = tuple(
+        (k, ttk.Entry) for k in info_keys
+    )
+
+
+class KisAspect(KisFrame):
+    _fields = tuple(
+        (k, ttk.Entry) for k in aspect_keys
+    )
 
 
 class KisStat(KisFrame):
     _fields = tuple(
-        (k, partial(
-            Tix.Control,
-            integer=True,
-            min=0,
-            max=5,
-        )) for k in stat_keys
+        (k, stat_field) for k in stat_keys
     )
 
     def col_conf(self):
-        for col in xrange(8):
-            self.columnconfigure(col, weight=0 if col % 2 == 0 else 1)
+        for col in xrange(4):
+            self.columnconfigure(col, weight=1)
 
     def grid_field(self, idx, label, field):
-        lcol = idx * 2
-        fcol = lcol + 1
-        label.grid(column=lcol, row=0, sticky='E')
-        field.grid(column=fcol, row=0, sticky='EW')
+        label.grid(column=idx, row=0, sticky='EW')
+        field.grid(column=idx, row=1, sticky='EW')
 
 
 class KisBook(ttk.Notebook):
@@ -100,6 +107,8 @@ class KisBook(ttk.Notebook):
         self.binder = binder
         self.infopage = KisInfo(self, self.binder)
         self.add(self.infopage, text="Character Information")
+        self.aspectpage = KisAspect(self, self.binder)
+        self.add(self.aspectpage, text="Aspects")
         self.statpage = KisStat(self, self.binder)
         self.add(self.statpage, text="Stats")
 
@@ -107,6 +116,7 @@ class KisBook(ttk.Notebook):
 class KisMain(Tix.Tk):
     def __init__(self, *args, **kwargs):
         Tix.Tk.__init__(self, *args, **kwargs)
+        self.title('KisGen')
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.binder = DataBinder(self)
