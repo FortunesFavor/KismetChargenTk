@@ -1,4 +1,4 @@
 Character Generator for Kismet
 ==============================
 
-This is in heavy need of a rewrite.
+This is the rewrite that KisGen has been waiting for.  I hope.
