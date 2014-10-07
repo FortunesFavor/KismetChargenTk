@@ -40,7 +40,7 @@ class Menu(object):
     """
     This builder represents cascading menus.
     """
-    def __init__(self, name=None, *children):
+    def __init__(self, name=None, *children, **options):
         """
         :param name: The label for the menu (None for the root menu)
         :param *children: Other Menu or Item instances (or anything with a
@@ -48,6 +48,7 @@ class Menu(object):
         """
         self.name = name
         self.children = children
+        self.options = options
 
     def build(self, master):
         """
@@ -55,7 +56,7 @@ class Menu(object):
                        instance to bind to.
         :returns: The menu object.
         """
-        menu = tkinter.Menu(master)
+        menu = tkinter.Menu(master, **self.options)
         if self.name is None:
             master.option_add('*tearOff', tkinter.FALSE)
             master['menu'] = menu
@@ -70,13 +71,14 @@ class Item(object):
     """
     Represents a clickable menu item.
     """
-    def __init__(self, name, command=None):
+    def __init__(self, name, command=None, **options):
         """
         :param name: The label for the menu item
         :param command: the function to call when the menu item is clicked.
         """
         self.name = name
         self.command = command
+        self.options = options
 
     def build(self, master):
         """
@@ -87,6 +89,7 @@ class Item(object):
         }
         if self.command is not None:
             args['command'] = self.command
+        args.update(self.options)
         master.add_command(**args)
 
 
